@@ -19,7 +19,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         script: |
-          if [ ! -d "/root/vps-demo" ]; then
+          if [ ! -d "~/vps-demo" ]; then
             git clone https://github.com/${{ github.repository }}.git /root/vps-demo
           fi
           
