@@ -20,10 +20,10 @@ jobs:
         key: ${{ secrets.KEY }}
         script: |
           if [ ! -d "~/vps-demo" ]; then
-            git clone https://github.com/${{ github.repository }}.git /root/vps-demo
+            git clone https://github.com/${{ github.repository }}.git ~/vps-demo
           fi
           
-          cd /root/vps-demo
+          cd ~/vps-demo
           git pull origin main
           
           docker stop my-demo-container || true
