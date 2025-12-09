@@ -15,7 +15,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         # 下面这三行缩进必须对齐，且不能被删除
-        host: ${{ secrets.HOST }}
+        host: "34.92.92.176"
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         script: |
