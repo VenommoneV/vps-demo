@@ -1,0 +1,46 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ "main" ] # 当 main 分支有代码提交时触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@master # 使用著名的 SSH 连接插件
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
+          # 1. 进入项目目录 (如果没有就克隆)
+          if [ ! -d "/root/vps-demo" ]; then
+            git clone https://github.com/${{ github.repository }}.git /root/vps-demo
+          fi
+          
+          # 2. 进入目录并拉取最新代码
+          cd /root/vps-demo
+          git pull origin main
+          
+          # 3. 停止并删除旧容器 (如果存在)
+          # || true 表示如果容器不存在也不报错，继续执行
+          docker stop my-demo-container || true
+          docker rm my-demo-container || true
+          
+          # 4. 删除旧镜像 (节省空间，可选)
+          docker rmi my-demo-app:v1 || true
+          
+          # 5. 构建新镜像 (注意后面的点)
+          docker build -t my-demo-app:v1 .
+          
+          # 6. 启动新容器
+          docker run -d \
+            -p 80:8080 \
+            --name my-demo-container \
+            --restart=always \
+            my-demo-app:v1
