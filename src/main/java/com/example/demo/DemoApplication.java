@@ -4,8 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.net.InetAddress;
-import java.time.LocalDateTime;
+
 
 @SpringBootApplication
 @RestController
@@ -17,11 +16,8 @@ public class DemoApplication {
 
     @GetMapping("/")
     public String home() {
-        try {
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            return "<h1>君君和爷爷!</h1>"; 
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
+        // 改个颜色，加个版本号，看看效果
+        return "<h1 style='color:red'>Version 2.0 Released!</h1>" + 
+               "<p>Deployed automatically by GitHub Actions.</p>";
     }
 }
