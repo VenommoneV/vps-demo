@@ -36,9 +36,7 @@ jobs:
           docker run -d \
             -p 80:8080 \
             --net vps-net \
-            # 加上这一行，强制覆盖配置文件里的 bootstrap-servers
             -e SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
-            # 还可以顺便覆盖 Group ID
             -e SPRING_KAFKA_CONSUMER_GROUP_ID=log-group \
             --name my-demo-container \
             --restart=always \
