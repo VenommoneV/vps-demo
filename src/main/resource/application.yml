@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092  # 本地开发用
 
     consumer:
       group-id: log-group
