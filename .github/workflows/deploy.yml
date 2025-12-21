@@ -37,6 +37,8 @@ jobs:
             -p 80:8080 \
             --net vps-net \
             -e SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
+            -e SPRING_REDIS_HOST=redis \
+            -e SPRING_REDIS_PASSWORD=password \
             --name my-demo-container \
             --restart=always \
             my-demo-app:v1
