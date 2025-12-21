@@ -39,6 +39,10 @@ jobs:
             -e SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
             -e SPRING_REDIS_HOST=redis \
             -e SPRING_REDIS_PASSWORD=password \
+            -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/vps_demo_db?useSSL=false&serverTimezone=Asia/Shanghai \
+            -e SPRING_DATASOURCE_USERNAME=root \
+            -e SPRING_DATASOURCE_PASSWORD=rootpassword \
+            -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver \
             --name my-demo-container \
             --restart=always \
             my-demo-app:v1

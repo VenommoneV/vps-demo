@@ -1,5 +1,7 @@
 package com.example.demo;  // 声明包名，定义项目的基础路径
 
+import com.example.demo.entity.SysLog;
+import com.example.demo.mapper.SysLogMapper;
 import org.apache.kafka.clients.admin.NewTopic;  // 导入 Kafka 用于管理 Topic 的类
 import org.slf4j.Logger;                        // 导入日志接口
 import org.slf4j.LoggerFactory;                 // 导入日志工厂，用于创建日志对象
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;   // 导入请求�
 import org.springframework.web.bind.annotation.RestController;  // 导入 REST 控制器注解
 
 import java.time.Duration;  // 导入时间长度类，用于设置 Redis 过期时间
+import java.time.LocalDateTime;
 import java.util.UUID;      // 导入 UUID 工具类，用于生成唯一消息 ID
 
 @SpringBootApplication      // 标记这是一个 Spring Boot 应用，开启自动配置
@@ -36,6 +39,9 @@ public class DemoApplication {  // 定义应用的主类
     // 注入 Redis 操作工具
     @Autowired  // Spring 自动从容器中注入 StringRedisTemplate 实例
     private StringRedisTemplate redisTemplate;  // 定义 Redis 操作模板变量
+
+    @Autowired
+    private SysLogMapper sysLogMapper;
 
     // 1. 自动创建 Topic (生产环境通常由运维创建，这里为了演示自动创建)
     @Bean  // 声明此方法返回一个 Spring 管理的 Bean
@@ -83,13 +89,19 @@ public class DemoApplication {  // 定义应用的主类
          Boolean isFirstTime = redisTemplate.opsForValue()  // 获取 Redis 的字符串操作对象
                  .setIfAbsent(lockKey, "1", Duration.ofMinutes(10));  // 尝试设置键值，若不存在则成功并设置 10 分钟过期
  
-         if (Boolean.TRUE.equals(isFirstTime)) {  // 判断是否为第一次设置（即该消息之前未处理过）
-             // 返回 true，说明 Redis 里没这个 ID，是第一次处理
-             logger.info(" [成功消费] Content: {}, ID: {}", content, msgId);  // 打印消费成功的日志
-             
-             // TODO: 这里写具体的业务逻辑，比如入库 MySQL
-             
-         } else {  // 如果返回 false，说明键已存在
+        if (Boolean.TRUE.equals(isFirstTime)) {  // 判断是否为第一次设置（即该消息之前未处理过）
+            // 返回 true，说明 Redis 里没这个 ID，是第一次处理
+            logger.info(" [Redis放行][成功消费] Content: {}, ID: {}", content, msgId);  // 打印消费成功的日志
+            
+            // 将日志入库 MySQL
+            SysLog sysLog = new SysLog();
+            sysLog.setMsgId(msgId);
+            sysLog.setContent(content);
+            sysLog.setCreateTime(LocalDateTime.now());
+            sysLogMapper.insert(sysLog);
+            logger.info(" [入库成功] ID: {}", msgId);
+            
+        } else {  // 如果返回 false，说明键已存在
              // 返回 false，说明 Redis 里已经有这个 ID 了，是重复消息
              logger.warn(" [重复拦截] ID: {} 已经被处理过，跳过！", msgId);  // 打印拦截重复消息的警告日志
          }  // 判断结束
