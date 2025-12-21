@@ -1,13 +1,28 @@
 spring:
+  # ==================== Kafka 配置 ====================
   kafka:
-    bootstrap-servers: localhost:9092  # 本地开发用
+    bootstrap-servers: localhost:9092  # Kafka 服务器地址，本地开发用
 
-    consumer:
-      group-id: log-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    consumer:                          # 消费者配置
+      group-id: log-group              # 消费者组ID，同组消费者共享消息
+      auto-offset-reset: earliest      # 无偏移量时从最早消息开始消费
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer   # 键反序列化器
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer # 值反序列化器
 
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    producer:                          # 生产者配置
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer       # 键序列化器
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer     # 值序列化器
+
+  # ==================== Redis 配置 ====================
+  redis:
+    host: localhost                    # Redis 服务器主机地址
+    port: 6379                         # Redis 服务器端口（默认6379）
+    password:                          # Redis 密码（无密码则留空）
+    database: 0                        # 使用的数据库索引（0-15）
+    timeout: 3000ms                    # 连接超时时间
+    lettuce:                           # Lettuce 连接池配置（Spring Boot 2.x 默认使用 Lettuce）
+      pool:
+        max-active: 8                  # 连接池最大活跃连接数
+        max-idle: 8                    # 连接池最大空闲连接数
+        min-idle: 0                    # 连接池最小空闲连接数
+        max-wait: -1ms                 # 获取连接最大等待时间（-1表示无限等待）
